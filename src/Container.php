@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RobertWesner\DependencyInjection;
 
 use Psr\Container\ContainerExceptionInterface;
@@ -63,8 +65,8 @@ class Container implements ContainerInterface
 
         $parameters = [];
         foreach ($constructor?->getParameters() ?? [] as $parameter) {
-            if (class_exists($parameter->getType())) {
-                $parameters[] = $this->get($parameter->getType());
+            if (class_exists($parameter->getType()->getName())) {
+                $parameters[] = $this->get($parameter->getType()->getName());
             } elseif (
                 $parameter->getAttributes()
                 && array_any(
@@ -91,7 +93,7 @@ class Container implements ContainerInterface
                     /** @var AutowireInterface $instance */
                     $instance = $attribute->newInstance();
                     $result = $instance->resolve();
-                    settype($result, $parameter->getType());
+                    settype($result, $parameter->getType()->getName());
 
                     break;
                 }
@@ -103,7 +105,7 @@ class Container implements ContainerInterface
                 throw new ContainerException(sprintf(
                     'Could not autowire parameter "%s" of type "%s" in class "%s".',
                     $parameter->getName(),
-                    $parameter->getType(),
+                    $parameter->getType()->getName(),
                     $name(),
                 ));
             }
