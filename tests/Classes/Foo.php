@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace RobertWesner\DependencyInjection\Tests\Classes;
 
 use RobertWesner\DependencyInjection\Attributes\AutowireEnv;
