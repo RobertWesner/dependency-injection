@@ -10,9 +10,11 @@ use Flow\JSONPath\JSONPathException;
 use JsonException;
 use RobertWesner\DependencyInjection\AbstractBuffered;
 use RobertWesner\DependencyInjection\Exception\AutowireException;
+use Symfony\Component\Yaml\Exception\ParseException;
+use Symfony\Component\Yaml\Yaml;
 
 #[Attribute(Attribute::TARGET_PARAMETER)]
-class AutowireJson extends AbstractBuffered implements FileBasedAutowireInterface
+class AutowireYaml extends AbstractBuffered implements FileBasedAutowireInterface
 {
     public function __construct(
         private readonly string $filename,
@@ -24,7 +26,7 @@ class AutowireJson extends AbstractBuffered implements FileBasedAutowireInterfac
     {
         if (!file_exists($this->filename) && !$this->getBuffer()->has($this->filename)) {
             throw new AutowireException(sprintf(
-                'Missing JSON file "%s".',
+                'Missing YAML file "%s".',
                 $this->filename,
             ));
         }
@@ -33,13 +35,13 @@ class AutowireJson extends AbstractBuffered implements FileBasedAutowireInterfac
             $result = $this->getBuffer()->get($this->filename);
         } else {
             try {
-                $result = json_decode(file_get_contents($this->filename), true, flags: JSON_THROW_ON_ERROR);
+                $result = Yaml::parse(file_get_contents($this->filename));
                 if ($buffered) {
                     $this->getBuffer()->set($this->filename, $result);
                 }
-            } catch (JsonException $exception) {
+            } catch (ParseException $exception) {
                 throw new AutowireException(sprintf(
-                    'Invalid JSON file "%s".',
+                    'Invalid YAML file "%s".',
                     $this->filename,
                 ), previous: $exception);
             }

@@ -5,52 +5,54 @@ declare(strict_types=1);
 namespace RobertWesner\DependencyInjection\Attributes;
 
 use Attribute;
-use Dotenv\Dotenv;
-use Dotenv\Exception\InvalidFileException;
+use Exception;
+use JsonException;
 use RobertWesner\DependencyInjection\AbstractBuffered;
 use RobertWesner\DependencyInjection\Exception\AutowireException;
+use SimpleXMLElement;
 
 #[Attribute(Attribute::TARGET_PARAMETER)]
-class AutowireEnv extends AbstractBuffered implements FileBasedAutowireInterface
+class AutowireXml extends AbstractBuffered implements FileBasedAutowireInterface
 {
     public function __construct(
         private readonly string $filename,
-        private readonly string $key,
+        private readonly string $xPath,
     ) {}
 
-    public function resolve(bool $buffered = false): mixed
+    public function resolve(bool $buffered = false): array
     {
         if (!file_exists($this->filename) && !$this->getBuffer()->has($this->filename)) {
             throw new AutowireException(sprintf(
-                'Missing .env file "%s".',
+                'Missing XML file "%s".',
                 $this->filename,
             ));
         }
 
         if ($buffered && $this->getBuffer()->has($this->filename)) {
-            $content = $this->getBuffer()->get($this->filename);
+            $xml = $this->getBuffer()->get($this->filename);
         } else {
             try {
-                $content = Dotenv::parse(file_get_contents($this->filename)) ?: [];
+                $xml = new SimpleXMLElement(file_get_contents($this->filename));
                 if ($buffered) {
-                    $this->getBuffer()->set($this->filename, $content);
+                    $this->getBuffer()->set($this->filename, $xml);
                 }
-            } catch (InvalidFileException $exception) {
+            } catch (Exception $exception) {
                 throw new AutowireException(sprintf(
-                    'Invalid .env file "%s".',
+                    'Invalid XML file "%s".',
                     $this->filename,
                 ), previous: $exception);
             }
         }
 
-        if (!isset($content[$this->key])) {
+        $result = $xml->xpath($this->xPath);
+        if ($result === false) {
             throw new AutowireException(sprintf(
-                'Missing key "%s" in .env file "%s".',
-                $this->key,
+                'Could not find XPath "%s" in XML file "%s".',
+                $this->xPath,
                 $this->filename,
             ));
         }
 
-        return $content[$this->key];
+        return $result;
     }
 }
