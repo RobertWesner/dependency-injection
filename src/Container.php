@@ -52,6 +52,7 @@ class Container implements ContainerInterface
         return isset($this->registry[$id]);
     }
 
+
     /**
      * @template T
      * @param class-string<T> $name
@@ -71,7 +72,7 @@ class Container implements ContainerInterface
 
         $parameters = [];
         foreach ($constructor?->getParameters() ?? [] as $parameter) {
-            if (class_exists($parameter->getType()->getName())) {
+            if ($parameter?->getType()?->getName() !== null && class_exists($parameter->getType()->getName())) {
                 $parameters[] = $this->get($parameter->getType()->getName());
             } elseif (
                 $parameter->getAttributes()
@@ -87,12 +88,18 @@ class Container implements ContainerInterface
                 $parameters[] = $this->resolveAutowireAttribute($parameter);
             } elseif ($parameter->isDefaultValueAvailable()) {
                 $parameters[] = $parameter->getDefaultValue();
+            } elseif ($parameter->getType() === null) {
+                throw new ContainerException(sprintf(
+                    'Could not autowire parameter "%s" without known type or Annotation in class "%s".',
+                    $parameter->getName(),
+                    $name,
+                ));
             } else {
                 throw new ContainerException(sprintf(
                     'Could not autowire parameter "%s" of type "%s" in class "%s".',
                     $parameter->getName(),
                     $parameter->getType()->getName(),
-                    $name(),
+                    $name,
                 ));
             }
         }

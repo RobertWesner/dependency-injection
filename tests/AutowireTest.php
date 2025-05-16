@@ -6,7 +6,6 @@ namespace RobertWesner\DependencyInjection\Tests;
 
 use PHPUnit\Framework\Attributes\BackupGlobals;
 use PHPUnit\Framework\Attributes\CoversClass;
-use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
@@ -31,15 +30,15 @@ use RobertWesner\DependencyInjection\Tests\AutowireTestFixtures\Foo;
 #[CoversClass(AutowireGlobal::class)]
 #[CoversClass(AutowireEnv::class)]
 #[CoversClass(AutowireJson::class)]
-#[UsesClass(AutowireValue::class)]
-#[UsesClass(AutowireGlobal::class)]
-#[UsesClass(AutowireEnv::class)]
-#[UsesClass(AutowireJson::class)]
-#[UsesClass(AutowireCallable::class)]
-#[UsesClass(AutowireFile::class)]
-#[UsesClass(AutowireXml::class)]
-#[UsesClass(AutowireYaml::class)]
-#[UsesClass(Buffer::class)]
+#[CoversClass(AutowireValue::class)]
+#[CoversClass(AutowireGlobal::class)]
+#[CoversClass(AutowireEnv::class)]
+#[CoversClass(AutowireJson::class)]
+#[CoversClass(AutowireCallable::class)]
+#[CoversClass(AutowireFile::class)]
+#[CoversClass(AutowireXml::class)]
+#[CoversClass(AutowireYaml::class)]
+#[CoversClass(Buffer::class)]
 final class AutowireTest extends TestCase
 {
     /**
@@ -64,7 +63,8 @@ final class AutowireTest extends TestCase
                 Callable:   static(123, test)
                 XML:        Sed imperdiet
                 YAML:       1338
-                
+                Default:    yep
+
                  /\___/\
                 | ' . ' |
                  \_____/

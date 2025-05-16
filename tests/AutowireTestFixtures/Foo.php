@@ -17,6 +17,7 @@ readonly class Foo
 {
     public function __construct(
         private Bar $bar,
+        #[SomeRandomAttribute]
         #[AutowireValue(Moody::MOOD)]
         private string $fromConst,
         #[AutowireGlobal('GLOBALS', 'demo')]
@@ -33,6 +34,7 @@ readonly class Foo
         private array $chapter2TitleResult,
         #[AutowireYaml(__DIR__ . '/foo.yaml', '$.test.value')]
         private int $fromYaml,
+        private string $defaulted = 'yep',
     ) {}
 
     public function test(): string
@@ -46,6 +48,7 @@ readonly class Foo
             Callable:   $this->fromCallable
             XML:        {$this->chapter2TitleResult[0]}
             YAML:       $this->fromYaml
+            Default:    $this->defaulted
             
             $this->asciiCat
             EOF;
