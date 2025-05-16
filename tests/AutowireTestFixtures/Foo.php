@@ -10,6 +10,7 @@ use RobertWesner\DependencyInjection\Attributes\AutowireFile;
 use RobertWesner\DependencyInjection\Attributes\AutowireGlobal;
 use RobertWesner\DependencyInjection\Attributes\AutowireJson;
 use RobertWesner\DependencyInjection\Attributes\AutowireValue;
+use RobertWesner\DependencyInjection\Attributes\AutowireXml;
 
 readonly class Foo
 {
@@ -27,6 +28,8 @@ readonly class Foo
         private string $fromCallable,
         #[AutowireFile(__DIR__ . '/cat.txt')]
         private string $asciiCat,
+        #[AutowireXml(__DIR__ . '/test.xml', '/document/chapters/chapter[2]/@title')]
+        private array $chapter2TitleResult,
     ) {}
 
     public function test(): string
@@ -38,6 +41,7 @@ readonly class Foo
             Env:        $this->fromEnv
             JSON:       $this->fromJson
             Callable:   $this->fromCallable
+            XML:        {$this->chapter2TitleResult[0]}
             
             $this->asciiCat
             EOF;

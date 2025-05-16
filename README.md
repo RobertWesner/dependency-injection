@@ -78,6 +78,10 @@ readonly class Foo
         // Load a full file
         #[AutowireFile(__DIR__ . '/../../cat.txt')]
         private string $asciiCat,
+        
+        // Load an XML file and parses it as SimpleXml. Then applies xPath to it to acquire an array element result.
+        #[AutowireXml(__DIR__ . '/../../test.xml', '/document/chapters/chapter[2]/@title')]
+        private array $chapter2TitleResult,
     ) {}
 }
 ```

@@ -46,6 +46,7 @@ final class AutowireTest extends TestCase
                 Env:        Funny Value Here!
                 JSON:       1337
                 Callable:   static(123, test)
+                XML:        Sed imperdiet
                 
                  /\___/\
                 | ' . ' |
