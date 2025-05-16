@@ -13,7 +13,9 @@ use RobertWesner\DependencyInjection\Attributes\AutowireEnv;
 use RobertWesner\DependencyInjection\Attributes\AutowireGlobal;
 use RobertWesner\DependencyInjection\Attributes\AutowireJson;
 use RobertWesner\DependencyInjection\Container;
-use RobertWesner\DependencyInjection\Tests\Classes\Foo;
+use RobertWesner\DependencyInjection\Tests\AutowireTestFixtures\BeforeDatabase;
+use RobertWesner\DependencyInjection\Tests\AutowireTestFixtures\Database;
+use RobertWesner\DependencyInjection\Tests\AutowireTestFixtures\Foo;
 
 /**
  * This is a big blackbox test and should be replaced, or rather expanded, with properly mocked unit tests.
@@ -38,12 +40,49 @@ final class AutowireTest extends TestCase
         self::assertInstanceOf(Foo::class, $foo);
         self::assertSame(
             <<<EOF
-                Bar:    Thingy
-                Global: :)
-                Env:    Funny Value Here!
-                JSON:   1337
+                Bar:        Thingy
+                Value:      feelin' alright
+                Global:     :)
+                Env:        Funny Value Here!
+                JSON:       1337
+                Callable:   static(123, test)
                 EOF,
             $foo->test(),
+        );
+    }
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    #[BackupGlobals(true)]
+    public function testReuseEnv(): void
+    {
+        $container = new Container();
+
+        self::assertNotFalse(
+            file_put_contents(
+                __DIR__ . '/AutowireTestFixtures/.env',
+                <<<ENV
+                    SOMETHING_RANDOM="abc"
+                    MYSQL_SERVER="localhost"
+                    MYSQL_USERNAME="root"
+                    MYSQL_PASSWORD="verysecure"
+                    ENV,
+            ),
+        );
+
+        $container->get(BeforeDatabase::class);
+
+        // since it is buffered, it will still be available after deletion
+        // this is the way to test single access
+        unlink(__DIR__ . '/AutowireTestFixtures/.env');
+
+        $database = $container->get(Database::class);
+        self::assertInstanceOf(Database::class, $database);
+        self::assertSame(
+            'connect(localhost, root, verysecure)',
+            $database->test(),
         );
     }
 }

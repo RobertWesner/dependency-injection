@@ -18,7 +18,7 @@ readonly class AutowireGlobal implements AutowireInterface
         private string $key,
     ) {}
 
-    public function resolve(): mixed
+    public function resolve(bool $buffered = false): mixed
     {
         // this is necessary as access of superglobals seems not to work via dynamic variables
         return (match ($this->global) {

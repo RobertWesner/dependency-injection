@@ -7,41 +7,50 @@ namespace RobertWesner\DependencyInjection\Attributes;
 use Attribute;
 use Dotenv\Dotenv;
 use Dotenv\Exception\InvalidFileException;
+use RobertWesner\DependencyInjection\AbstractBuffered;
 use RobertWesner\DependencyInjection\Exception\AutowireException;
 
 #[Attribute(Attribute::TARGET_PARAMETER)]
-readonly class AutowireEnv implements AutowireInterface
+class AutowireEnv extends AbstractBuffered implements FileBasedAutowireInterface
 {
     public function __construct(
-        private string $filename,
-        private string $key,
+        private readonly string $filename,
+        private readonly string $key,
     ) {}
 
-    public function resolve(): mixed
+    public function resolve(bool $buffered = false): mixed
     {
-        if (!file_exists($this->filename)) {
+        if (!file_exists($this->filename) && !$this->getBuffer()->has($this->filename)) {
             throw new AutowireException(sprintf(
                 'Missing .env file "%s".',
                 $this->filename,
             ));
         }
 
-        try {
-            $content = Dotenv::parse(file_get_contents($this->filename)) ?: [];
-            if (!isset($content[$this->key])) {
+        if ($buffered && $this->getBuffer()->has($this->filename)) {
+            $content = $this->getBuffer()->get($this->filename);
+        } else {
+            try {
+                $content = Dotenv::parse(file_get_contents($this->filename)) ?: [];
+                if ($buffered) {
+                    $this->getBuffer()->set($this->filename, $content);
+                }
+            } catch (InvalidFileException $exception) {
                 throw new AutowireException(sprintf(
-                    'Missing key "%s" in .env file "%s".',
-                    $this->key,
+                    'Invalid .env file "%s".',
                     $this->filename,
-                ));
+                ), previous: $exception);
             }
-
-            return $content[$this->key];
-        } catch (InvalidFileException $exception) {
-            throw new AutowireException(sprintf(
-                'Invalid .env file "%s".',
-                $this->filename,
-            ), previous: $exception);
         }
+
+        if (!isset($content[$this->key])) {
+            throw new AutowireException(sprintf(
+                'Missing key "%s" in .env file "%s".',
+                $this->key,
+                $this->filename,
+            ));
+        }
+
+        return $content[$this->key];
     }
 }

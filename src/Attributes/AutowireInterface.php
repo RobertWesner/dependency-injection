@@ -11,5 +11,5 @@ interface AutowireInterface
     /**
      * @throws AutowireException
      */
-    public function resolve(): mixed;
+    public function resolve(bool $buffered = false): mixed;
 }

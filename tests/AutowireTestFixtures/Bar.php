@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace RobertWesner\DependencyInjection\Tests\Classes;
+namespace RobertWesner\DependencyInjection\Tests\AutowireTestFixtures;
 
 use Stringable;
 

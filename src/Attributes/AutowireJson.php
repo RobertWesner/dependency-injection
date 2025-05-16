@@ -6,13 +6,14 @@ namespace RobertWesner\DependencyInjection\Attributes;
 
 use Attribute;
 use JsonException;
+use RobertWesner\DependencyInjection\AbstractBuffered;
 use RobertWesner\DependencyInjection\Exception\AutowireException;
 
 #[Attribute(Attribute::TARGET_PARAMETER)]
-readonly class AutowireJson implements AutowireInterface
+class AutowireJson extends AbstractBuffered implements FileBasedAutowireInterface
 {
     public function __construct(
-        private string $filename,
+        private readonly string $filename,
         /**
          * $.foo.bar
          *
@@ -22,10 +23,10 @@ readonly class AutowireJson implements AutowireInterface
          *     }
          * }
          */
-        private string $path,
+        private readonly string $path,
     ) {}
 
-    public function resolve(): mixed
+    public function resolve(bool $buffered = false): mixed
     {
         $segments = explode('.', $this->path);
         if (array_shift($segments) !== '$') {
@@ -35,21 +36,27 @@ readonly class AutowireJson implements AutowireInterface
             ));
         }
 
-        if (!file_exists($this->filename)) {
+        if (!file_exists($this->filename) && !$this->getBuffer()->has($this->filename)) {
             throw new AutowireException(sprintf(
                 'Missing JSON file "%s".',
                 $this->filename,
             ));
         }
 
-        // TODO: cache JSON content at runtime
-        try {
-            $result = json_decode(file_get_contents($this->filename), true, flags: JSON_THROW_ON_ERROR);
-        } catch (JsonException $exception) {
-            throw new AutowireException(sprintf(
-                'Invalid JSON file "%s".',
-                $this->filename,
-            ), previous: $exception);
+        if ($buffered && $this->getBuffer()->has($this->filename)) {
+            $result = $this->getBuffer()->get($this->filename);
+        } else {
+            try {
+                $result = json_decode(file_get_contents($this->filename), true, flags: JSON_THROW_ON_ERROR);
+                if ($buffered) {
+                    $this->getBuffer()->set($this->filename, $result);
+                }
+            } catch (JsonException $exception) {
+                throw new AutowireException(sprintf(
+                    'Invalid JSON file "%s".',
+                    $this->filename,
+                ), previous: $exception);
+            }
         }
 
         foreach ($segments as $segment) {
