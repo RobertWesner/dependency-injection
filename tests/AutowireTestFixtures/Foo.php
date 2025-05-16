@@ -11,6 +11,7 @@ use RobertWesner\DependencyInjection\Attributes\AutowireGlobal;
 use RobertWesner\DependencyInjection\Attributes\AutowireJson;
 use RobertWesner\DependencyInjection\Attributes\AutowireValue;
 use RobertWesner\DependencyInjection\Attributes\AutowireXml;
+use RobertWesner\DependencyInjection\Attributes\AutowireYaml;
 
 readonly class Foo
 {
@@ -30,6 +31,8 @@ readonly class Foo
         private string $asciiCat,
         #[AutowireXml(__DIR__ . '/test.xml', '/document/chapters/chapter[2]/@title')]
         private array $chapter2TitleResult,
+        #[AutowireYaml(__DIR__ . '/foo.yaml', '$.test.value')]
+        private int $fromYaml,
     ) {}
 
     public function test(): string
@@ -42,6 +45,7 @@ readonly class Foo
             JSON:       $this->fromJson
             Callable:   $this->fromCallable
             XML:        {$this->chapter2TitleResult[0]}
+            YAML:       $this->fromYaml
             
             $this->asciiCat
             EOF;

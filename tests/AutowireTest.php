@@ -47,6 +47,7 @@ final class AutowireTest extends TestCase
                 JSON:       1337
                 Callable:   static(123, test)
                 XML:        Sed imperdiet
+                YAML:       1338
                 
                  /\___/\
                 | ' . ' |

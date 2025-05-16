@@ -18,11 +18,13 @@ This is a small and fun PSR-11 container implementation with autowiring.
 It provides plenty of alternative ways to autowire non-object values
 from .env, JSON files, constants, and more via PHP Attributes.
 
+
 ## Installation
 
 ```bash
 composer require robertwesner/dependency-injection
 ```
+
 
 ## Usage
 
@@ -34,6 +36,7 @@ $container = new Container();
 $instance = $container->get(MyClass::class);
 $instance->myMethod('Some text.', 1234);
 ```
+
 
 ## Autowiring non-instance values
 
@@ -82,16 +85,22 @@ readonly class Foo
         // Load an XML file and parses it as SimpleXml. Then applies xPath to it to acquire an array element result.
         #[AutowireXml(__DIR__ . '/../../test.xml', '/document/chapters/chapter[2]/@title')]
         private array $chapter2TitleResult,
+    
+        // Load from YAML file based on path
+        // $.test.value accesses the following value:
+        //  test:
+        //      value: 1338
+        #[AutowireYaml(__DIR__ . '/foo.yaml', '$.test.value')]
+        private int $fromYaml,
     ) {}
 }
 ```
 
-Planned features:
-
-- #[AutowireYaml]: reads a YAML value similar to AutowireJson
-- #[AutowireXml]: reads an XML
 
 ## Buffering autowired files for multiple access
+
+When using a single file multiple times you should consider adding the Attribute `#[BufferFile]`
+to store the (parsed) file in memory and load it when reused.
 
 applicable to:
 - `#[AutowireFile]`

@@ -8,20 +8,19 @@ use Attribute;
 use JsonException;
 use RobertWesner\DependencyInjection\AbstractBuffered;
 use RobertWesner\DependencyInjection\Exception\AutowireException;
+use Symfony\Component\Yaml\Exception\ParseException;
+use Symfony\Component\Yaml\Yaml;
 
 #[Attribute(Attribute::TARGET_PARAMETER)]
-class AutowireJson extends AbstractBuffered implements FileBasedAutowireInterface
+class AutowireYaml extends AbstractBuffered implements FileBasedAutowireInterface
 {
     public function __construct(
         private readonly string $filename,
         /**
          * $.foo.bar
          *
-         * {
-         *     "foo": {
-         *         "bar": 1337
-         *     }
-         * }
+         * foo:
+         *     bar: 1337
          */
         private readonly string $path,
     ) {}
@@ -31,14 +30,14 @@ class AutowireJson extends AbstractBuffered implements FileBasedAutowireInterfac
         $segments = explode('.', $this->path);
         if (array_shift($segments) !== '$') {
             throw new AutowireException(sprintf(
-                'Invalid JSON path "%s".',
+                'Invalid YAML path "%s".',
                 $this->path,
             ));
         }
 
         if (!file_exists($this->filename) && !$this->getBuffer()->has($this->filename)) {
             throw new AutowireException(sprintf(
-                'Missing JSON file "%s".',
+                'Missing YAML file "%s".',
                 $this->filename,
             ));
         }
@@ -47,13 +46,13 @@ class AutowireJson extends AbstractBuffered implements FileBasedAutowireInterfac
             $result = $this->getBuffer()->get($this->filename);
         } else {
             try {
-                $result = json_decode(file_get_contents($this->filename), true, flags: JSON_THROW_ON_ERROR);
+                $result = Yaml::parse(file_get_contents($this->filename));
                 if ($buffered) {
                     $this->getBuffer()->set($this->filename, $result);
                 }
-            } catch (JsonException $exception) {
+            } catch (ParseException $exception) {
                 throw new AutowireException(sprintf(
-                    'Invalid JSON file "%s".',
+                    'Invalid YAML file "%s".',
                     $this->filename,
                 ), previous: $exception);
             }
@@ -62,7 +61,7 @@ class AutowireJson extends AbstractBuffered implements FileBasedAutowireInterfac
         foreach ($segments as $segment) {
             if (!isset($result[$segment])) {
                 throw new AutowireException(sprintf(
-                    'Missing path "%s" in JSON file "%s".',
+                    'Missing path "%s" in YAML file "%s".',
                     $this->path,
                     $this->filename,
                 ));
