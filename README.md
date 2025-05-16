@@ -58,7 +58,7 @@ readonly class Foo
         private string $demo,
         
         // Load from a .env, .env.local, or similar file
-        #[AutowireEnv(__DIR__ . '/foo.env', 'TEST')]
+        #[AutowireEnv(__DIR__ . '/../../.env', 'TEST')]
         private string $envTest,
         
         // Load from JSON file based on path
@@ -68,29 +68,33 @@ readonly class Foo
         //          "value": 1337
         //      }
         //  } 
-        #[AutowireJson(__DIR__ . '/foo.json', '$.test.value')]
+        #[AutowireJson(__DIR__ . '/../../foo.json', '$.test.value')]
         private int $val,
         
         // Call any function or static method, optionally with arguments.
         #[AutowireCallable([StaticProvider::class, 'provide'], ['123', 'test'])]
         private string $provided,
+        
+        // Load a full file
+        #[AutowireFile(__DIR__ . '/../../cat.txt')]
+        private string $asciiCat,
     ) {}
 }
 ```
 
 Planned features:
 
-- #[AutowireFile]: reads a full file into the parameter
 - #[AutowireYaml]: reads a YAML value similar to AutowireJson
 - #[AutowireXml]: reads an XML
-- #[BufferFile]: applicable to:
-  - AutowireFile
-  - AutowireJson
-  - AutowireEnv
-  - AutowireYaml
-  - AutowireXml
 
-## [WIP] Buffering autowired files for multiple access
+## Buffering autowired files for multiple access
+
+applicable to:
+- `#[AutowireFile]`
+- `#[AutowireJson]`
+- `#[AutowireEnv]`
+- `#[AutowireYaml]`
+- `#[AutowireXml]`
 
 ```php
 readonly class DatabaseService
