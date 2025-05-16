@@ -16,7 +16,7 @@ use RobertWesner\DependencyInjection\Tests\AutowireTestFixtures\Impossible;
 use RobertWesner\DependencyInjection\Tests\AutowireTestFixtures\Typeless;
 
 #[CoversClass(Container::class)]
-final class SimpleTest extends TestCase
+final class Test extends TestCase
 {
     /**
      * @throws ContainerExceptionInterface

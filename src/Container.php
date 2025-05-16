@@ -52,7 +52,6 @@ class Container implements ContainerInterface
         return isset($this->registry[$id]);
     }
 
-
     /**
      * @template T
      * @param class-string<T> $name
@@ -112,6 +111,7 @@ class Container implements ContainerInterface
 
     /**
      * @throws AutowireException
+     * @throws ContainerException
      */
     private function resolveAutowireAttribute(ReflectionParameter $parameter): mixed
     {
@@ -145,6 +145,9 @@ class Container implements ContainerInterface
             return $result;
         }
 
-        return null;
+        //@codeCoverageIgnoreStart
+        // I don't think this happen due to the pre-check for existing Attributes before calling
+        throw new ContainerException('This should not have happened. Something is very wrong.');
+        //@codeCoverageIgnoreEnd
     }
 }
