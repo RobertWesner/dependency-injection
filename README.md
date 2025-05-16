@@ -60,21 +60,7 @@ readonly class Foo
         #[AutowireGlobal('GLOBALS', 'demo')]
         private string $demo,
         
-        // Load from a .env, .env.local, or similar file
-        #[AutowireEnv(__DIR__ . '/../../.env', 'TEST')]
-        private string $envTest,
-        
-        // Load from JSON file based on path
-        // $.test.value accesses the following value:
-        //  {
-        //      "test": {
-        //          "value": 1337
-        //      }
-        //  } 
-        #[AutowireJson(__DIR__ . '/../../foo.json', '$.test.value')]
-        private int $val,
-        
-        // Call any function or static method, optionally with arguments.
+        // Call any function or static method, optionally with arguments
         #[AutowireCallable([StaticProvider::class, 'provide'], ['123', 'test'])]
         private string $provided,
         
@@ -82,16 +68,23 @@ readonly class Foo
         #[AutowireFile(__DIR__ . '/../../cat.txt')]
         private string $asciiCat,
         
-        // Load an XML file and parses it as SimpleXml. Then applies xPath to it to acquire an array element result.
+        // Load from a .env, .env.local, or similar file
+        #[AutowireEnv(__DIR__ . '/../../.env', 'TEST')]
+        private string $envTest,
+        
+        // Load from JSON file based on JSONPath
+        // Can return an array of all JSONPath matches with the "multiple" Parameter
+        #[AutowireJson(__DIR__ . '/../../foo.json', '$.test.value')]
+        private int $val,
+        
+        // Load from YAML file based on JSONPath
+        // Can return an array of all JSONPath matches with the "multiple" Parameter
+        #[AutowireYaml(__DIR__ . '/../../foo.yaml', '$.test.value')]
+        private int $fromYaml,
+        
+        // Load an XML file and parses it as SimpleXml. Then applies xPath to it to acquire an array element result
         #[AutowireXml(__DIR__ . '/../../test.xml', '/document/chapters/chapter[2]/@title')]
         private array $chapter2TitleResult,
-    
-        // Load from YAML file based on path
-        // $.test.value accesses the following value:
-        //  test:
-        //      value: 1338
-        #[AutowireYaml(__DIR__ . '/foo.yaml', '$.test.value')]
-        private int $fromYaml,
     ) {}
 }
 ```

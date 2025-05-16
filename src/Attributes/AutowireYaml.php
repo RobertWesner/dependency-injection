@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace RobertWesner\DependencyInjection\Attributes;
 
 use Attribute;
+use Flow\JSONPath\JSONPath;
+use Flow\JSONPath\JSONPathException;
 use JsonException;
 use RobertWesner\DependencyInjection\AbstractBuffered;
 use RobertWesner\DependencyInjection\Exception\AutowireException;
@@ -16,25 +18,12 @@ class AutowireYaml extends AbstractBuffered implements FileBasedAutowireInterfac
 {
     public function __construct(
         private readonly string $filename,
-        /**
-         * $.foo.bar
-         *
-         * foo:
-         *     bar: 1337
-         */
         private readonly string $path,
+        private readonly bool $multiple = false,
     ) {}
 
     public function resolve(bool $buffered = false): mixed
     {
-        $segments = explode('.', $this->path);
-        if (array_shift($segments) !== '$') {
-            throw new AutowireException(sprintf(
-                'Invalid YAML path "%s".',
-                $this->path,
-            ));
-        }
-
         if (!file_exists($this->filename) && !$this->getBuffer()->has($this->filename)) {
             throw new AutowireException(sprintf(
                 'Missing YAML file "%s".',
@@ -58,16 +47,17 @@ class AutowireYaml extends AbstractBuffered implements FileBasedAutowireInterfac
             }
         }
 
-        foreach ($segments as $segment) {
-            if (!isset($result[$segment])) {
-                throw new AutowireException(sprintf(
-                    'Missing path "%s" in YAML file "%s".',
-                    $this->path,
-                    $this->filename,
-                ));
-            }
+        try {
+            $result = new JSONPath($result)->find($this->path)->getData();
+        } catch (JSONPathException $exception) {
+            throw new AutowireException(sprintf(
+                'Invalid JSON path "%s".',
+                $this->path,
+            ), previous: $exception);
+        }
 
-            $result = $result[$segment];
+        if (!$this->multiple) {
+            return $result[0];
         }
 
         return $result;
