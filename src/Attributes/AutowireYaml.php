@@ -7,7 +7,6 @@ namespace RobertWesner\DependencyInjection\Attributes;
 use Attribute;
 use Flow\JSONPath\JSONPath;
 use Flow\JSONPath\JSONPathException;
-use JsonException;
 use RobertWesner\DependencyInjection\AbstractBuffered;
 use RobertWesner\DependencyInjection\Exception\AutowireException;
 use Symfony\Component\Yaml\Exception\ParseException;

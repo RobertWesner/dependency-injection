@@ -9,7 +9,7 @@ use Stringable;
 class Impossible implements Stringable
 {
     public function __construct(
-        private string $foo,
+        private readonly string $foo,
     ) {}
 
     public function __toString()
