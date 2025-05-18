@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace RobertWesner\DependencyInjection\Tests\Attributes\AutowireGlobal;
 
+use PHPUnit\Framework\Attributes\BackupGlobals;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
@@ -36,10 +37,12 @@ class Test extends TestCase
      * @throws AutowireException
      * @throws NotFoundExceptionInterface
      */
+    #[BackupGlobals(true)]
     public function test(): void
     {
         $container = new Container();
 
+        $_SESSION = [];
         $_SESSION['login'] = 'd81c14bb-0dd6-4fdc-90a9-aa637143e8f6';
         $foo = $container->get(Foo::class);
         self::assertSame('d81c14bb-0dd6-4fdc-90a9-aa637143e8f6', $foo->getLogin());

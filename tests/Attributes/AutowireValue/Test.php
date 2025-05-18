@@ -9,12 +9,12 @@ use PHPUnit\Framework\Attributes\UsesClass;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerExceptionInterface;
 use Psr\Container\NotFoundExceptionInterface;
-use RobertWesner\DependencyInjection\Attributes\AutowireCallable;
+use RobertWesner\DependencyInjection\Attributes\AutowireValue;
 use RobertWesner\DependencyInjection\Container;
 use RobertWesner\DependencyInjection\Exception\AutowireException;
 use RobertWesner\DependencyInjection\Tests\Attributes\AutowireValue\Fixtures\Foo;
 
-#[CoversClass(AutowireCallable::class)]
+#[CoversClass(AutowireValue::class)]
 #[UsesClass(Container::class)]
 class Test extends TestCase
 {
