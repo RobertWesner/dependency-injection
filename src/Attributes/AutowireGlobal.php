@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace RobertWesner\DependencyInjection\Attributes;
 
 use Attribute;
+use RobertWesner\DependencyInjection\Exception\AutowireException;
 
 #[Attribute(Attribute::TARGET_PARAMETER)]
 readonly class AutowireGlobal implements AutowireInterface
@@ -21,7 +22,7 @@ readonly class AutowireGlobal implements AutowireInterface
     public function resolve(bool $buffered = false): mixed
     {
         // this is necessary as access of superglobals seems not to work via dynamic variables
-        return (match ($this->global) {
+        $global = (match ($this->global) {
             'GLOBALS' => $GLOBALS,
             '_SERVER' => $_SERVER,
             '_GET' => $_GET,
@@ -32,6 +33,16 @@ readonly class AutowireGlobal implements AutowireInterface
             '_REQUEST' => $_REQUEST,
             '_ENV' => $_ENV,
             default => ${$this->global},
-        })[$this->key] ?? null;
+        });
+
+        if (!isset($global[$this->key])) {
+            throw new AutowireException(sprintf(
+                'Missing key "%s" in global $%s.',
+                $this->key,
+                $this->global,
+            ));
+        }
+
+        return $global[$this->key];
     }
 }
