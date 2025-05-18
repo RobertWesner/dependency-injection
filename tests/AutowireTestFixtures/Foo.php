@@ -9,6 +9,7 @@ use RobertWesner\DependencyInjection\Attributes\AutowireEnv;
 use RobertWesner\DependencyInjection\Attributes\AutowireFile;
 use RobertWesner\DependencyInjection\Attributes\AutowireGlobal;
 use RobertWesner\DependencyInjection\Attributes\AutowireJson;
+use RobertWesner\DependencyInjection\Attributes\AutowireToml;
 use RobertWesner\DependencyInjection\Attributes\AutowireValue;
 use RobertWesner\DependencyInjection\Attributes\AutowireXml;
 use RobertWesner\DependencyInjection\Attributes\AutowireYaml;
@@ -34,11 +35,15 @@ readonly class Foo
         private array $chapter2TitleResult,
         #[AutowireYaml(__DIR__ . '/foo.yaml', '$.test.value')]
         private int $fromYaml,
+        #[AutowireToml(__DIR__ . '/foo.toml', '$.database')]
+        private array $fromToml,
         private string $defaulted = 'yep',
     ) {}
 
     public function test(): string
     {
+        $toml = var_export($this->fromToml, true);
+
         return <<<EOF
             Bar:        $this->bar
             Value:      $this->fromConst
@@ -49,6 +54,9 @@ readonly class Foo
             XML:        {$this->chapter2TitleResult[0]}
             YAML:       $this->fromYaml
             Default:    $this->defaulted
+            
+            TOML:
+            $toml
             
             $this->asciiCat
             EOF;

@@ -82,6 +82,11 @@ readonly class Foo
         #[AutowireYaml(__DIR__ . '/../../foo.yaml', '$.test.value')]
         private int $fromYaml,
         
+        // Load from TOML file based on JSONPath
+        // Can return an array of all JSONPath matches with the "multiple" Parameter
+        #[AutowireToml(__DIR__ . '/../../config.toml', '$.database')]
+        private array $databaseConfig,
+        
         // Load an XML file and parses it as SimpleXml. Then applies xPath to it to acquire an array element result
         #[AutowireXml(__DIR__ . '/../../test.xml', '/document/chapters/chapter[2]/@title')]
         private array $chapter2TitleResult,
@@ -100,6 +105,7 @@ applicable to:
 - `#[AutowireJson]`
 - `#[AutowireEnv]`
 - `#[AutowireYaml]`
+- `#[AutowireToml]`
 - `#[AutowireXml]`
 
 ```php
