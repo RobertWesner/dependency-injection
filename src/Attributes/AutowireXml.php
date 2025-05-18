@@ -6,7 +6,6 @@ namespace RobertWesner\DependencyInjection\Attributes;
 
 use Attribute;
 use Exception;
-use JsonException;
 use RobertWesner\DependencyInjection\AbstractBuffered;
 use RobertWesner\DependencyInjection\Exception\AutowireException;
 use SimpleXMLElement;

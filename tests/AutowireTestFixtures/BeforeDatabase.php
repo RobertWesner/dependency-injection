@@ -6,7 +6,6 @@ namespace RobertWesner\DependencyInjection\Tests\AutowireTestFixtures;
 
 use RobertWesner\DependencyInjection\Attributes\AutowireEnv;
 use RobertWesner\DependencyInjection\Attributes\BufferFile;
-use stdClass;
 
 readonly class BeforeDatabase
 {

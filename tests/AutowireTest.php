@@ -14,6 +14,7 @@ use RobertWesner\DependencyInjection\Attributes\AutowireEnv;
 use RobertWesner\DependencyInjection\Attributes\AutowireFile;
 use RobertWesner\DependencyInjection\Attributes\AutowireGlobal;
 use RobertWesner\DependencyInjection\Attributes\AutowireJson;
+use RobertWesner\DependencyInjection\Attributes\AutowireToml;
 use RobertWesner\DependencyInjection\Attributes\AutowireValue;
 use RobertWesner\DependencyInjection\Attributes\AutowireXml;
 use RobertWesner\DependencyInjection\Attributes\AutowireYaml;
@@ -38,6 +39,7 @@ use RobertWesner\DependencyInjection\Tests\AutowireTestFixtures\Foo;
 #[CoversClass(AutowireFile::class)]
 #[CoversClass(AutowireXml::class)]
 #[CoversClass(AutowireYaml::class)]
+#[CoversClass(AutowireToml::class)]
 #[CoversClass(Buffer::class)]
 final class AutowireTest extends TestCase
 {
@@ -64,6 +66,34 @@ final class AutowireTest extends TestCase
                 XML:        Sed imperdiet
                 YAML:       1338
                 Default:    yep
+
+                TOML:
+                array (
+                  'enabled' => true,
+                  'ports' => 
+                  array (
+                    0 => 8000,
+                    1 => 8001,
+                    2 => 8002,
+                  ),
+                  'data' => 
+                  array (
+                    0 => 
+                    array (
+                      0 => 'delta',
+                      1 => 'phi',
+                    ),
+                    1 => 
+                    array (
+                      0 => 3.14,
+                    ),
+                  ),
+                  'temp_targets' => 
+                  array (
+                    'cpu' => 79.5,
+                    'case' => 72.0,
+                  ),
+                )
 
                  /\___/\
                 | ' . ' |
