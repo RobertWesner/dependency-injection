@@ -9,7 +9,7 @@ use RobertWesner\DependencyInjection\Attributes\AutowireGlobal;
 final readonly class Foo
 {
     public function __construct(
-        #[AutowireGlobal('_SESSION', 'login')]
+        #[AutowireGlobal('GLOBALS', 'login')]
         private string $login,
     ) {}
 

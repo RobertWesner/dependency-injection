@@ -42,8 +42,7 @@ class Test extends TestCase
     {
         $container = new Container();
 
-        $_SESSION = [];
-        $_SESSION['login'] = 'd81c14bb-0dd6-4fdc-90a9-aa637143e8f6';
+        $GLOBALS['login'] = 'd81c14bb-0dd6-4fdc-90a9-aa637143e8f6';
         $foo = $container->get(Foo::class);
         self::assertSame('d81c14bb-0dd6-4fdc-90a9-aa637143e8f6', $foo->getLogin());
     }

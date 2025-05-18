@@ -14,6 +14,7 @@ use RobertWesner\DependencyInjection\Attributes\AutowireEnv;
 use RobertWesner\DependencyInjection\Attributes\AutowireFile;
 use RobertWesner\DependencyInjection\Attributes\AutowireGlobal;
 use RobertWesner\DependencyInjection\Attributes\AutowireJson;
+use RobertWesner\DependencyInjection\Attributes\AutowireToml;
 use RobertWesner\DependencyInjection\Attributes\AutowireValue;
 use RobertWesner\DependencyInjection\Attributes\AutowireXml;
 use RobertWesner\DependencyInjection\Attributes\AutowireYaml;
@@ -38,6 +39,7 @@ use RobertWesner\DependencyInjection\Tests\AutowireTestFixtures\Foo;
 #[CoversClass(AutowireFile::class)]
 #[CoversClass(AutowireXml::class)]
 #[CoversClass(AutowireYaml::class)]
+#[CoversClass(AutowireToml::class)]
 #[CoversClass(Buffer::class)]
 final class AutowireTest extends TestCase
 {
