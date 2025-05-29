@@ -140,7 +140,9 @@ class Container implements ContainerInterface
             /** @var AutowireInterface $instance */
             $instance = $attribute->newInstance();
             $result = $instance->resolve($buffer);
-            settype($result, $parameter->getType()->getName());
+            if (!($result === null && $parameter->getType()->allowsNull())) {
+                settype($result, $parameter->getType()->getName());
+            }
 
             return $result;
         }
