@@ -8,6 +8,7 @@ use RobertWesner\DependencyInjection\Attributes\AutowireCallable;
 use RobertWesner\DependencyInjection\Attributes\AutowireEnv;
 use RobertWesner\DependencyInjection\Attributes\AutowireFile;
 use RobertWesner\DependencyInjection\Attributes\AutowireGlobal;
+use RobertWesner\DependencyInjection\Attributes\AutowireHeader;
 use RobertWesner\DependencyInjection\Attributes\AutowireJson;
 use RobertWesner\DependencyInjection\Attributes\AutowireToml;
 use RobertWesner\DependencyInjection\Attributes\AutowireValue;
@@ -37,6 +38,8 @@ readonly class Foo
         private int $fromYaml,
         #[AutowireToml(__DIR__ . '/foo.toml', '$.database')]
         private array $fromToml,
+        #[AutowireHeader('X-Test-Whatever')]
+        private ?string $whatever,
         private string $defaulted = 'yep',
     ) {}
 
@@ -53,6 +56,7 @@ readonly class Foo
             Callable:   $this->fromCallable
             XML:        {$this->chapter2TitleResult[0]}
             YAML:       $this->fromYaml
+            Header:     $this->whatever
             Default:    $this->defaulted
             
             TOML:

@@ -90,6 +90,10 @@ readonly class Foo
         // Load an XML file and parses it as SimpleXml. Then applies xPath to it to acquire an array element result
         #[AutowireXml(__DIR__ . '/../../test.xml', '/document/chapters/chapter[2]/@title')]
         private array $chapter2TitleResult,
+        
+        // Reads a header and stores its value. Missing Headers are always NULL so all usages should be nullable!
+        #[AutowireHeader('User-Agent')]
+        private ?string $userAgent,
     ) {}
 }
 ```

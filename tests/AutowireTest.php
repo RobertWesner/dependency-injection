@@ -13,6 +13,7 @@ use RobertWesner\DependencyInjection\Attributes\AutowireCallable;
 use RobertWesner\DependencyInjection\Attributes\AutowireEnv;
 use RobertWesner\DependencyInjection\Attributes\AutowireFile;
 use RobertWesner\DependencyInjection\Attributes\AutowireGlobal;
+use RobertWesner\DependencyInjection\Attributes\AutowireHeader;
 use RobertWesner\DependencyInjection\Attributes\AutowireJson;
 use RobertWesner\DependencyInjection\Attributes\AutowireToml;
 use RobertWesner\DependencyInjection\Attributes\AutowireValue;
@@ -40,6 +41,7 @@ use RobertWesner\DependencyInjection\Tests\AutowireTestFixtures\Foo;
 #[CoversClass(AutowireXml::class)]
 #[CoversClass(AutowireYaml::class)]
 #[CoversClass(AutowireToml::class)]
+#[CoversClass(AutowireHeader::class)]
 #[CoversClass(Buffer::class)]
 final class AutowireTest extends TestCase
 {
@@ -53,6 +55,7 @@ final class AutowireTest extends TestCase
         $container = new Container();
 
         $GLOBALS['demo'] = ':)';
+        $_SERVER['HTTP_X_TEST_WHATEVER'] = '1339';
         $foo = $container->get(Foo::class);
         self::assertInstanceOf(Foo::class, $foo);
         self::assertSame(
@@ -65,6 +68,7 @@ final class AutowireTest extends TestCase
                 Callable:   static(123, test)
                 XML:        Sed imperdiet
                 YAML:       1338
+                Header:     1339
                 Default:    yep
 
                 TOML:
