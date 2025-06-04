@@ -62,7 +62,7 @@ class Container implements ContainerInterface
      */
     private function resolveClass(string $name)
     {
-        if (!class_exists($name)) {
+        if (!$this->exists($name)) {
             return null;
         }
 
@@ -71,7 +71,7 @@ class Container implements ContainerInterface
 
         $parameters = [];
         foreach ($constructor?->getParameters() ?? [] as $parameter) {
-            if ($parameter?->getType()?->getName() !== null && class_exists($parameter->getType()->getName())) {
+            if ($parameter?->getType()?->getName() !== null && $this->exists($parameter->getType()->getName())) {
                 $parameters[] = $this->get($parameter->getType()->getName());
             } elseif (
                 $parameter->getAttributes()
@@ -151,5 +151,10 @@ class Container implements ContainerInterface
         // I don't think this happen due to the pre-check for existing Attributes before calling
         throw new ContainerException('This should not have happened. Something is very wrong.');
         //@codeCoverageIgnoreEnd
+    }
+
+    private function exists(string $class): bool
+    {
+        return class_exists($class) || interface_exists($class) || enum_exists($class);
     }
 }
