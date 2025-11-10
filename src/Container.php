@@ -71,12 +71,11 @@ class Container implements ContainerInterface
 
         $parameters = [];
         foreach ($constructor?->getParameters() ?? [] as $parameter) {
-            if ($parameter?->getType()?->getName() !== null && $this->exists($parameter->getType()->getName())) {
-                $parameters[] = $this->get($parameter->getType()->getName());
-            } elseif (
-                $parameter->getAttributes()
+            $attributes = $parameter?->getAttributes() ?? [];
+            if (
+                count($attributes) > 0
                 && array_any(
-                    $parameter->getAttributes(),
+                    $attributes,
                     fn(ReflectionAttribute $attribute) => is_a(
                         $attribute->getName(),
                         AutowireInterface::class,
@@ -85,6 +84,8 @@ class Container implements ContainerInterface
                 )
             ) {
                 $parameters[] = $this->resolveAutowireAttribute($parameter);
+            } elseif ($parameter?->getType()?->getName() !== null && $this->exists($parameter->getType()->getName())) {
+                $parameters[] = $this->get($parameter->getType()->getName());
             } elseif ($parameter->isDefaultValueAvailable()) {
                 $parameters[] = $parameter->getDefaultValue();
             } elseif ($parameter->getType() === null) {
@@ -140,7 +141,7 @@ class Container implements ContainerInterface
             /** @var AutowireInterface $instance */
             $instance = $attribute->newInstance();
             $result = $instance->resolve($buffer);
-            if (!($result === null && $parameter->getType()->allowsNull())) {
+            if (!($result === null && $parameter->getType()->allowsNull()) && $parameter->getType()->isBuiltin()) {
                 settype($result, $parameter->getType()->getName());
             }
 

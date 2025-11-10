@@ -13,6 +13,8 @@ use RobertWesner\DependencyInjection\Attributes\AutowireCallable;
 use RobertWesner\DependencyInjection\Container;
 use RobertWesner\DependencyInjection\Exception\AutowireException;
 use RobertWesner\DependencyInjection\Tests\Attributes\AutowireCallable\Fixtures\Bar;
+use RobertWesner\DependencyInjection\Tests\Attributes\AutowireCallable\Fixtures\Baz;
+use RobertWesner\DependencyInjection\Tests\Attributes\AutowireCallable\Fixtures\Faz;
 use RobertWesner\DependencyInjection\Tests\Attributes\AutowireCallable\Fixtures\Foo;
 
 #[CoversClass(AutowireCallable::class)]
@@ -42,5 +44,18 @@ class Test extends TestCase
 
         $foo = $container->get(Foo::class);
         self::assertSame(['b' => 'a'], $foo->test());
+    }
+
+    /**
+     * @throws ContainerExceptionInterface
+     * @throws AutowireException
+     * @throws NotFoundExceptionInterface
+     */
+    public function testAttributePrecedenceOverType(): void
+    {
+        $container = new Container();
+
+        $faz = $container->get(Faz::class);
+        self::assertInstanceOf(Baz::class, $faz->baz);
     }
 }
