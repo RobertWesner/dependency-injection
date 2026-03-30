@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace RobertWesner\DependencyInjection\Tests\AutowireTestFixtures;
+namespace RobertWesner\DependencyInjection\Tests\AutowireTestFixtures\Class;
 
 use RobertWesner\DependencyInjection\Attributes\AutowireEnv;
 use RobertWesner\DependencyInjection\Attributes\BufferFile;
@@ -10,7 +10,7 @@ use RobertWesner\DependencyInjection\Attributes\BufferFile;
 readonly class BeforeDatabase
 {
     public function __construct(
-        #[AutowireEnv(__DIR__ . '/.env', 'SOMETHING_RANDOM')]
+        #[AutowireEnv(__DIR__ . '/../.env', 'SOMETHING_RANDOM')]
         #[BufferFile]
         private string $abc,
     ) {}

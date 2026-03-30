@@ -2,14 +2,14 @@
 
 declare(strict_types=1);
 
-namespace RobertWesner\DependencyInjection\Tests\AutowireTestFixtures;
+namespace RobertWesner\DependencyInjection\Tests\AutowireTestFixtures\Class;
 
 use Stringable;
 
-class Impossible implements Stringable
+class Typeless implements Stringable
 {
     public function __construct(
-        private readonly string $foo,
+        private $foo,
     ) {}
 
     public function __toString()

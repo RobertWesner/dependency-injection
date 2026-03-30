@@ -7,10 +7,10 @@ namespace RobertWesner\DependencyInjection\Attributes;
 use Attribute;
 use Flow\JSONPath\JSONPath;
 use Flow\JSONPath\JSONPathException;
+use PhpCollective\Toml\Exception\ParseException;
+use PhpCollective\Toml\Toml;
 use RobertWesner\DependencyInjection\AbstractBuffered;
 use RobertWesner\DependencyInjection\Exception\AutowireException;
-use Symfony\Component\Yaml\Exception\ParseException;
-use Yosymfony\Toml\Toml;
 
 #[Attribute(Attribute::TARGET_PARAMETER)]
 class AutowireToml extends AbstractBuffered implements FileBasedAutowireInterface
@@ -34,7 +34,7 @@ class AutowireToml extends AbstractBuffered implements FileBasedAutowireInterfac
             $result = $this->getBuffer()->get($this->filename);
         } else {
             try {
-                $result = Toml::Parse(file_get_contents($this->filename));
+                $result = Toml::decodeFile($this->filename);
                 if ($buffered) {
                     $this->getBuffer()->set($this->filename, $result);
                 }

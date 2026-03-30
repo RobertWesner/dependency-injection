@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace RobertWesner\DependencyInjection\Tests;
 
+use RobertWesner\DependencyInjection\Tests\AutowireTestFixtures\Class\BeforeDatabase;
+use RobertWesner\DependencyInjection\Tests\AutowireTestFixtures\Class\Database;
+use RobertWesner\DependencyInjection\Tests\AutowireTestFixtures\Class\Foo;
 use PHPUnit\Framework\Attributes\BackupGlobals;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
@@ -21,9 +24,6 @@ use RobertWesner\DependencyInjection\Attributes\AutowireXml;
 use RobertWesner\DependencyInjection\Attributes\AutowireYaml;
 use RobertWesner\DependencyInjection\Buffer;
 use RobertWesner\DependencyInjection\Container;
-use RobertWesner\DependencyInjection\Tests\AutowireTestFixtures\BeforeDatabase;
-use RobertWesner\DependencyInjection\Tests\AutowireTestFixtures\Database;
-use RobertWesner\DependencyInjection\Tests\AutowireTestFixtures\Foo;
 
 /**
  * This is a big blackbox test and should be replaced, or rather expanded, with properly mocked unit tests.
