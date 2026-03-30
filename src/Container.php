@@ -9,11 +9,13 @@ use Psr\Container\ContainerInterface;
 use Psr\Container\NotFoundExceptionInterface;
 use ReflectionAttribute;
 use ReflectionClass;
+use ReflectionException;
 use ReflectionParameter;
 use RobertWesner\DependencyInjection\Attributes\AutowireInterface;
 use RobertWesner\DependencyInjection\Attributes\BufferFile;
 use RobertWesner\DependencyInjection\Attributes\FileBasedAutowireInterface;
 use RobertWesner\DependencyInjection\Exception\AutowireException;
+use RobertWesner\DependencyInjection\Exception\CircularDependencyException;
 use RobertWesner\DependencyInjection\Exception\ContainerException;
 use RobertWesner\DependencyInjection\Exception\NotFoundException;
 
@@ -27,16 +29,39 @@ class Container implements ContainerInterface
     }
 
     /**
-     * @template T
+     * @template T of mixed
+     *
      * @param class-string<T> $id
      * @return T
+     *
      * @throws AutowireException
+     * @throws CircularDependencyException
+     * @throws ContainerException
      * @throws ContainerExceptionInterface
+     * @throws NotFoundException
      * @throws NotFoundExceptionInterface
      */
-    public function get(string $id)
+    public function get(string $id): mixed
     {
-        $instance = $this->registry[$id] ?? $this->resolveClass($id);
+        return $this->getWithTrace($id, 0, []);
+    }
+
+    public function has(string $id): bool
+    {
+        return isset($this->registry[$id]);
+    }
+
+    /**
+     * @throws AutowireException
+     * @throws CircularDependencyException
+     * @throws ContainerException
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundException
+     * @throws NotFoundExceptionInterface
+     */
+    private function getWithTrace(string $id, int $depth, array $trace): mixed
+    {
+        $instance = $this->registry[$id] ?? $this->resolveClass($id, $depth, $trace);
         if ($instance === null) {
             throw new NotFoundException(sprintf(
                 'Could not find "%s" in container.',
@@ -47,26 +72,50 @@ class Container implements ContainerInterface
         return $instance;
     }
 
-    public function has(string $id): bool
-    {
-        return isset($this->registry[$id]);
-    }
-
     /**
-     * @template T
+     * @template T of object
+     *
      * @param class-string<T> $name
      * @return T|null
+     *
      * @throws AutowireException
+     * @throws CircularDependencyException
+     * @throws ContainerException
      * @throws ContainerExceptionInterface
+     * @throws NotFoundException
      * @throws NotFoundExceptionInterface
      */
-    private function resolveClass(string $name)
+    private function resolveClass(string $name, int $depth, array $trace): ?object
     {
         if (!$this->exists($name)) {
             return null;
         }
 
-        $class = new ReflectionClass($name);
+        if (isset($trace[$name])) {
+            throw new CircularDependencyException(
+                sprintf(
+                    'Detected circular dependency: %s',
+                    implode(
+                        ' > ',
+                        array_map(
+                            fn (string $c) => mb_substr(mb_strrchr($c, '\\'), 1),
+                            [...array_slice(array_flip($trace), $trace[$name]), $name]
+                        )
+                    )
+                ),
+            );
+        }
+
+        $trace[$name] = $depth;
+
+        try {
+            $class = new ReflectionClass($name);
+        } catch (ReflectionException $exception) {
+            throw new ContainerException(
+                sprintf('Could not reflect on class "%s".', $name),
+                previous: $exception,
+            );
+        }
         $constructor = $class->getConstructor();
 
         $parameters = [];
@@ -85,7 +134,7 @@ class Container implements ContainerInterface
             ) {
                 $parameters[] = $this->resolveAutowireAttribute($parameter);
             } elseif ($parameter?->getType()?->getName() !== null && $this->exists($parameter->getType()->getName())) {
-                $parameters[] = $this->get($parameter->getType()->getName());
+                $parameters[] = $this->getWithTrace($parameter->getType()->getName(), $depth + 1, $trace);
             } elseif ($parameter->isDefaultValueAvailable()) {
                 $parameters[] = $parameter->getDefaultValue();
             } elseif ($parameter->getType() === null) {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace RobertWesner\DependencyInjection\Tests\AutowireTestFixtures;
+namespace RobertWesner\DependencyInjection\Tests\AutowireTestFixtures\Class;
 
 final class Moody
 {

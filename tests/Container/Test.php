@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace RobertWesner\DependencyInjection\Tests\Container;
 
+use RobertWesner\DependencyInjection\Exception\CircularDependencyException;
+use RobertWesner\DependencyInjection\Tests\AutowireTestFixtures\Class\Circular;
+use RobertWesner\DependencyInjection\Tests\AutowireTestFixtures\Class\Impossible;
+use RobertWesner\DependencyInjection\Tests\AutowireTestFixtures\Class\Typeless;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Psr\Container\ContainerExceptionInterface;
@@ -12,8 +16,6 @@ use RobertWesner\DependencyInjection\Container;
 use RobertWesner\DependencyInjection\Exception\AutowireException;
 use RobertWesner\DependencyInjection\Exception\ContainerException;
 use RobertWesner\DependencyInjection\Exception\NotFoundException;
-use RobertWesner\DependencyInjection\Tests\AutowireTestFixtures\Impossible;
-use RobertWesner\DependencyInjection\Tests\AutowireTestFixtures\Typeless;
 
 #[CoversClass(Container::class)]
 final class Test extends TestCase
@@ -44,7 +46,7 @@ final class Test extends TestCase
         $container = new Container();
 
         self::assertFalse($container->has('something'));
-        self::expectException(NotFoundException::class);
+        $this->expectException(NotFoundException::class);
         $container->get('something');
     }
 
@@ -58,7 +60,7 @@ final class Test extends TestCase
 
         $container = new Container();
 
-        self::expectException(ContainerException::class);
+        $this->expectException(ContainerException::class);
         $container->get(Typeless::class);
     }
 
@@ -69,10 +71,23 @@ final class Test extends TestCase
      */
     public function testImpossible(): void
     {
-
         $container = new Container();
 
-        self::expectException(ContainerException::class);
+        $this->expectException(ContainerException::class);
         $container->get(Impossible::class);
+    }
+
+    /**
+     * @throws AutowireException
+     * @throws ContainerExceptionInterface
+     * @throws NotFoundExceptionInterface
+     */
+    public function testCircularDependency(): void
+    {
+        $container = new Container();
+
+        $this->expectException(CircularDependencyException::class);
+        $this->expectExceptionMessage('Detected circular dependency: Circular > Smirkular > Flirkular > Circular');
+        $container->get(Circular::class);
     }
 }

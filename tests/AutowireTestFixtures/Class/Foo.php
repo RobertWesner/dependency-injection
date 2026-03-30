@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace RobertWesner\DependencyInjection\Tests\AutowireTestFixtures;
+namespace RobertWesner\DependencyInjection\Tests\AutowireTestFixtures\Class;
 
 use RobertWesner\DependencyInjection\Attributes\AutowireCallable;
 use RobertWesner\DependencyInjection\Attributes\AutowireEnv;
@@ -14,6 +14,7 @@ use RobertWesner\DependencyInjection\Attributes\AutowireToml;
 use RobertWesner\DependencyInjection\Attributes\AutowireValue;
 use RobertWesner\DependencyInjection\Attributes\AutowireXml;
 use RobertWesner\DependencyInjection\Attributes\AutowireYaml;
+use RobertWesner\DependencyInjection\Tests\AutowireTestFixtures\SomeRandomAttribute;
 
 readonly class Foo
 {
@@ -24,19 +25,19 @@ readonly class Foo
         private string $fromConst,
         #[AutowireGlobal('GLOBALS', 'demo')]
         private string $fromGlobal,
-        #[AutowireEnv(__DIR__ . '/foo.ini', 'TEST')]
+        #[AutowireEnv(__DIR__ . '/../foo.ini', 'TEST')]
         private string $fromEnv,
-        #[AutowireJson(__DIR__ . '/foo.json', '$.test.value')]
+        #[AutowireJson(__DIR__ . '/../foo.json', '$.test.value')]
         private int $fromJson,
         #[AutowireCallable([StaticProvider::class, 'provide'], ['123', 'test'])]
         private string $fromCallable,
-        #[AutowireFile(__DIR__ . '/cat.txt')]
+        #[AutowireFile(__DIR__ . '/../cat.txt')]
         private string $asciiCat,
-        #[AutowireXml(__DIR__ . '/test.xml', '/document/chapters/chapter[2]/@title')]
+        #[AutowireXml(__DIR__ . '/../test.xml', '/document/chapters/chapter[2]/@title')]
         private array $chapter2TitleResult,
-        #[AutowireYaml(__DIR__ . '/foo.yaml', '$.test.value')]
+        #[AutowireYaml(__DIR__ . '/../foo.yaml', '$.test.value')]
         private int $fromYaml,
-        #[AutowireToml(__DIR__ . '/foo.toml', '$.database')]
+        #[AutowireToml(__DIR__ . '/../foo.toml', '$.database')]
         private array $fromToml,
         #[AutowireHeader('X-Test-Whatever')]
         private ?string $whatever,
